@@ -1,16 +1,19 @@
-var gulp            = require('gulp');
-var sass            = require('gulp-sass');
-var autoprefixer    = require('gulp-autoprefixer');
-var sourcemaps      = require('gulp-sourcemaps');
-var browserSync     = require('browser-sync');
-var useref          = require('gulp-useref');
-var uglify          = require('gulp-uglify');
-var gulpIf          = require('gulp-if');
-var cssnano         = require('gulp-cssnano');
-var imagemin        = require('gulp-imagemin');
-var cache           = require('gulp-cache');
-var del             = require('del');
-var runSequence     = require('run-sequence');
+const gulp            = require('gulp');
+const browserSync     = require('browser-sync');
+const sass            = require('gulp-sass');
+const autoprefixer    = require('gulp-autoprefixer');
+const sourcemaps      = require('gulp-sourcemaps');
+const useref          = require('gulp-useref');
+const babel           = require('gulp-babel');
+const uglify          = require('gulp-uglify');
+const gulpIf          = require('gulp-if');
+const cssnano         = require('gulp-cssnano');
+const pug             = require('gulp-pug')
+const htmlmin         = require('gulp-htmlmin');
+const imagemin        = require('gulp-imagemin');
+const cache           = require('gulp-cache');
+const del             = require('del');
+const runSequence     = require('run-sequence');
 
 // Basic Gulp task syntax
 gulp.task('hello', function() {
@@ -29,6 +32,17 @@ gulp.task('browserSync', function() {
   })
 })
 
+// Preprocesing pug files to html
+gulp.task('pug', function() {
+  return gulp.src('app/pug/index.pug') // Gets all files ending with .scss in app/scss and children dirs
+    .pipe(pug({
+      pretty: true
+    })) // Passes it through a gulp-sass, log errors to console
+    .pipe(gulp.dest('app/')) // Outputs it in the css folder
+    .pipe(browserSync.reload({ // Reloading with Browser Sync
+      stream: true
+    }));
+})
 
 // Preprocesing scss files to css
 gulp.task('sass', function() {
@@ -44,7 +58,8 @@ gulp.task('sass', function() {
 // Watchers
 gulp.task('watch', function() {
   gulp.watch('app/scss/**/*.scss', ['sass']);
-  gulp.watch('app/*.html', browserSync.reload);
+  gulp.watch('app/pug/index.pug', ['pug']);
+  gulp.watch('app/index.html', browserSync.reload);
   gulp.watch('app/js/**/*.js', browserSync.reload);
 })
 
@@ -56,8 +71,14 @@ gulp.task('watch', function() {
 gulp.task('useref', function() {
   return gulp.src('app/*.html')
     .pipe(useref())
-    .pipe(gulpIf('*.js', uglify()))
-    .pipe(gulpIf('*.css', cssnano()))
+    .pipe(sourcemaps.init())
+      .pipe(gulpIf('*.js', babel({
+              presets: ['es2015']
+          })))
+      .pipe(gulpIf('*.js', uglify()))
+      .pipe(gulpIf('*.css', cssnano()))
+      .pipe(gulpIf('*.html', htmlmin({collapseWhitespace: true})))
+    .pipe(sourcemaps.write('../maps'))
     .pipe(gulp.dest('dist'));
 });
 
@@ -96,7 +117,7 @@ gulp.task('clean:dist', function() {
 // ---------------
 
 gulp.task('default', function(callback) {
-  runSequence(['sass', 'browserSync'], 'watch',
+  runSequence(['pug', 'sass', 'browserSync'], 'watch',
     callback
   )
 })
@@ -104,6 +125,7 @@ gulp.task('default', function(callback) {
 gulp.task('build', function(callback) {
   runSequence(
     'clean:dist',
+    'pug',
     'sass',
     ['useref', 'images', 'fonts'],
     callback
