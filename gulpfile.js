@@ -15,24 +15,17 @@ const cache           = require('gulp-cache');
 const del             = require('del');
 const runSequence     = require('run-sequence');
 
+
 // Error function - this function prevets browsersync session from crashing on error
 function errorlog(err){
 	console.error(err.message);
 	this.emit('end');
 }
 
+
+// -----------------
 // Development Tasks 
 // -----------------
-
-// Start browserSync server
-gulp.task('browserSync', function() {
-  browserSync({
-    server: {
-      baseDir: 'app'
-    },
-    notify: false
-  })
-})
 
 // Preprocesing pug files to html
 gulp.task('pug', function() {
@@ -55,16 +48,27 @@ gulp.task('sass', function() {
     }));
 })
 
+// Start browserSync server
+gulp.task('browserSync', function() {
+  browserSync({
+    server: {
+      baseDir: 'app'
+    },
+    notify: false
+  })
+})
 
 // Watchers
 gulp.task('watch', function() {
   gulp.watch('app/assets/scss/**/*.scss', ['sass']);
   gulp.watch('app/assets/pug/**/*.pug', ['pug']);
-  gulp.watch('app/index.html', browserSync.reload);
+  //gulp.watch('app/index.html', browserSync.reload);
   gulp.watch('app/assets/js/**/*.js', browserSync.reload);
 })
 
 
+
+// ------------------
 // Optimization Tasks 
 // ------------------
 
@@ -79,7 +83,7 @@ gulp.task('useref', function() {
       .pipe(gulpIf('*.js', uglify()))
       .pipe(gulpIf('*.css', cssnano()))
       .pipe(gulpIf('*.html', htmlmin({collapseWhitespace: true})))
-    .pipe(sourcemaps.write('../maps'))
+    .pipe(sourcemaps.write('../maps/'))
     .pipe(gulp.dest('dist'));
 });
 
@@ -114,6 +118,7 @@ gulp.task('clean:dist', function() {
 });
 
 
+// ---------------
 // Build Sequences
 // ---------------
 
