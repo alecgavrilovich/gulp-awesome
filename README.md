@@ -1,5 +1,7 @@
-# Gulp Starter for CSS Tricks Tutorial  
+# "GulpAwesome" boilerplate  
 
-This repo is a gulp starter from CSS Tricks tutorial. 
+GulpAwesome is starter boilerplate for web projects made on top of gulp starter boilerplate from CSS Tricks tutorial. 
 
-Remember to do run the `npm install` command after cloning this repo :) 
+Plugins: "gulp, pug, sass, useref..."
+
+Remember to do run the `npm install` command after cloning this repo :)! 
