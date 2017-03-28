@@ -28,17 +28,18 @@ gulp.task('browserSync', function() {
   browserSync({
     server: {
       baseDir: 'app'
-    }
+    },
+    notify: false
   })
 })
 
 // Preprocesing pug files to html
 gulp.task('pug', function() {
-  return gulp.src('app/pug/index.pug') // Gets all files ending with .scss in app/scss and children dirs
+  return gulp.src('app/assets/pug/index.pug') // Gets all files ending with .pug in app/assets/pug and children dirs
     .pipe(pug({
       pretty: true
-    })) // Passes it through a gulp-sass, log errors to console
-    .pipe(gulp.dest('app/')) // Outputs it in the css folder
+    })) // Passes it through a gulp-pug, log errors to console
+    .pipe(gulp.dest('app/')) // Outputs it in the index.html to app folder
     .pipe(browserSync.reload({ // Reloading with Browser Sync
       stream: true
     }));
@@ -46,9 +47,9 @@ gulp.task('pug', function() {
 
 // Preprocesing scss files to css
 gulp.task('sass', function() {
-  return gulp.src('app/scss/**/*.scss') // Gets all files ending with .scss in app/scss and children dirs
+  return gulp.src('app/assets/scss/**/*.scss') // Gets all files ending with .scss in app/scss and children dirs
     .pipe(sass().on('error', sass.logError)) // Passes it through a gulp-sass, log errors to console
-    .pipe(gulp.dest('app/css')) // Outputs it in the css folder
+    .pipe(gulp.dest('app/assets/css')) // Outputs it in the css folder
     .pipe(browserSync.reload({ // Reloading with Browser Sync
       stream: true
     }));
@@ -57,10 +58,10 @@ gulp.task('sass', function() {
 
 // Watchers
 gulp.task('watch', function() {
-  gulp.watch('app/scss/**/*.scss', ['sass']);
-  gulp.watch('app/pug/index.pug', ['pug']);
-  gulp.watch('app/index.html', browserSync.reload);
-  gulp.watch('app/js/**/*.js', browserSync.reload);
+  gulp.watch('app/assets/scss/**/*.scss', ['sass']);
+  gulp.watch('app/assets/pug/index.pug', ['pug']);
+  //gulp.watch('app/index.html', browserSync.reload);
+  gulp.watch('app/assets/js/**/*.js', browserSync.reload);
 })
 
 
@@ -70,8 +71,8 @@ gulp.task('watch', function() {
 // Optimizing CSS and JavaScript 
 gulp.task('useref', function() {
   return gulp.src('app/*.html')
-    .pipe(useref())
     .pipe(sourcemaps.init())
+      .pipe(useref())
       .pipe(gulpIf('*.js', babel({
               presets: ['es2015']
           })))
@@ -85,19 +86,19 @@ gulp.task('useref', function() {
 
 // Optimizing Images 
 gulp.task('images', function() {
-  return gulp.src('app/img/**/*.+(png|jpg|jpeg|gif|svg)')
+  return gulp.src('app/assets/img/**/*.+(png|jpg|jpeg|gif|svg)')
     // Caching img that ran through imagemin
     .pipe(cache(imagemin({
       interlaced: true,
     })))
-    .pipe(gulp.dest('dist/img'))
+    .pipe(gulp.dest('dist/assets/img'))
 });
 
 
 // Copying fonts 
 gulp.task('fonts', function() {
-  return gulp.src('app/fonts/**/*')
-    .pipe(gulp.dest('dist/fonts'))
+  return gulp.src('app/assets/fonts/**/*')
+    .pipe(gulp.dest('dist/assets/fonts'))
 })
 
 
