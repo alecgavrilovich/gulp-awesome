@@ -8,17 +8,18 @@ const babel           = require('gulp-babel');
 const uglify          = require('gulp-uglify');
 const gulpIf          = require('gulp-if');
 const cssnano         = require('gulp-cssnano');
-const pug             = require('gulp-pug')
+const pug             = require('gulp-pug');
 const htmlmin         = require('gulp-htmlmin');
 const imagemin        = require('gulp-imagemin');
 const cache           = require('gulp-cache');
 const del             = require('del');
 const runSequence     = require('run-sequence');
 
-// Basic Gulp task syntax
-gulp.task('hello', function() {
-  console.log('Hello World!');
-})
+// Error function - this function prevets browsersync session from crashing on error
+function errorlog(err){
+	console.error(err.message);
+	this.emit('end');
+}
 
 // Development Tasks 
 // -----------------
@@ -35,10 +36,9 @@ gulp.task('browserSync', function() {
 
 // Preprocesing pug files to html
 gulp.task('pug', function() {
-  return gulp.src('app/assets/pug/index.pug') // Gets all files ending with .pug in app/assets/pug and children dirs
-    .pipe(pug({
-      pretty: true
-    })) // Passes it through a gulp-pug, log errors to console
+  return gulp.src(['app/assets/pug/**/*.pug', '!app/assets/pug/includes/*.pug']) 
+    .pipe(pug()) // Passes it through a gulp-pug, log errors to console
+    .on('error', errorlog)
     .pipe(gulp.dest('app/')) // Outputs it in the index.html to app folder
     .pipe(browserSync.reload({ // Reloading with Browser Sync
       stream: true
@@ -59,8 +59,8 @@ gulp.task('sass', function() {
 // Watchers
 gulp.task('watch', function() {
   gulp.watch('app/assets/scss/**/*.scss', ['sass']);
-  gulp.watch('app/assets/pug/index.pug', ['pug']);
-  //gulp.watch('app/index.html', browserSync.reload);
+  gulp.watch('app/assets/pug/**/*.pug', ['pug']);
+  gulp.watch('app/index.html', browserSync.reload);
   gulp.watch('app/assets/js/**/*.js', browserSync.reload);
 })
 
