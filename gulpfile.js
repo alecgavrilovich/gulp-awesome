@@ -42,7 +42,7 @@ gulp.task('pug', () => {
 
 // Preprocesing scss files to css
 gulp.task('sass', () => {
-     gulp.src('app/assets/scss/**/*.scss') // Gets all files ending with .scss in app/scss and children dirs
+     gulp.src('app/assets/scss/*.scss') // Gets all files ending with .scss in app/scss and children dirs
     .pipe(sass().on('error', sass.logError)) // Passes it through a gulp-sass, log errors to console
     .pipe(gulp.dest('app/assets/css')) // Outputs it in the css folder
     .pipe(browserSync.reload({ // Reloading with Browser Sync
