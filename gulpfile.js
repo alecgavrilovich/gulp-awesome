@@ -30,7 +30,7 @@ let errorlog = err => {
 
 // Preprocesing pug files to html
 gulp.task('pug', () => {
-    return gulp.src(['app/assets/pug/**/*.pug', '!app/assets/pug/includes/*.pug']) 
+     gulp.src(['app/assets/pug/**/*.pug', '!app/assets/pug/includes/*.pug']) 
     .pipe(pug())
     .pipe(htmlbeautify()) 
     .on('error', errorlog) // Passes it through a gulp-pug, log errors to console
@@ -38,17 +38,17 @@ gulp.task('pug', () => {
     .pipe(browserSync.reload({ // Reloading with Browser Sync
       stream: true
     }));
-})
+});
 
 // Preprocesing scss files to css
 gulp.task('sass', () => {
-    return gulp.src('app/assets/scss/**/*.scss') // Gets all files ending with .scss in app/scss and children dirs
+     gulp.src('app/assets/scss/**/*.scss') // Gets all files ending with .scss in app/scss and children dirs
     .pipe(sass().on('error', sass.logError)) // Passes it through a gulp-sass, log errors to console
     .pipe(gulp.dest('app/assets/css')) // Outputs it in the css folder
     .pipe(browserSync.reload({ // Reloading with Browser Sync
       stream: true
     }));
-})
+});
 
 // Start browserSync server
 gulp.task('browserSync', () => {
@@ -58,7 +58,7 @@ gulp.task('browserSync', () => {
     },
     notify: false
   })
-})
+});
 
 // Watchers
 gulp.task('watch', () => {
@@ -66,17 +66,17 @@ gulp.task('watch', () => {
   gulp.watch('app/assets/pug/**/*.pug', ['pug']);
   //gulp.watch('app/index.html', browserSync.reload);
   gulp.watch('app/assets/js/**/*.js', browserSync.reload);
-})
+});
 
 
 
-// ------------------
-// Optimization Tasks 
-// ------------------
+// -----------------------------------
+// Optimization Tasks for distribution
+// -----------------------------------
 
 // Optimizing CSS and JavaScript 
 gulp.task('useref', () => {
-   return gulp.src('app/*.html')
+    gulp.src('app/*.html')
     .pipe(sourcemaps.init())
       .pipe(useref())
       .pipe(gulpIf('*.js', babel({
@@ -92,7 +92,7 @@ gulp.task('useref', () => {
 
 // Optimizing Images 
 gulp.task('images', () => {
-   return gulp.src('app/assets/img/**/*.+(png|jpg|jpeg|gif|svg)')
+    gulp.src('app/assets/img/**/*.+(png|jpg|jpeg|gif|svg)')
     // Caching img that ran through imagemin
     .pipe(cache(imagemin({
       interlaced: true,
@@ -103,20 +103,20 @@ gulp.task('images', () => {
 
 // Copying fonts 
 gulp.task('fonts', () => {
-   return gulp.src('app/assets/fonts/**/*')
+    gulp.src('app/assets/fonts/**/*')
     .pipe(gulp.dest('dist/assets/fonts'))
 })
 
 
 // Cleaning 
 gulp.task('clean', () => {
-   return del.sync('dist').then((cb) => {
+    del.sync('dist').then((cb) => {
      cache.clearAll(cb);
   });
 })
 
 gulp.task('clean:dist', () => {
-   return del.sync(['dist/**/*', '!dist/img', '!dist/img/**/*']);
+    del.sync(['dist/**/*', '!dist/img', '!dist/img/**/*']);
 });
 
 
@@ -128,7 +128,7 @@ gulp.task('default', (callback) => {
   runSequence(['pug', 'sass', 'browserSync'], 'watch',
     callback
   )
-})
+});
 
 gulp.task('build', (callback) => {
   runSequence(
@@ -138,4 +138,4 @@ gulp.task('build', (callback) => {
     ['useref', 'images', 'fonts'],
     callback
   )
-})
+});
