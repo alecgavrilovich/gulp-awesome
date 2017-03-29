@@ -4,4 +4,4 @@ GulpAwesome is starter boilerplate for web projects made on top of gulp starter 
 
 Plugins: "gulp, pug, sass, useref..."
 
-Remember to do run the `npm install` command after cloning this repo :)! 
+Remember to do run the `npm install` command after cloning this repo! 

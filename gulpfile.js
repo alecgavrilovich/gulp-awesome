@@ -10,6 +10,7 @@ const gulpIf          = require('gulp-if');
 const cssnano         = require('gulp-cssnano');
 const pug             = require('gulp-pug');
 const htmlmin         = require('gulp-htmlmin');
+const htmlbeautify    = require('gulp-html-beautify');
 const imagemin        = require('gulp-imagemin');
 const cache           = require('gulp-cache');
 const del             = require('del');
@@ -17,7 +18,7 @@ const runSequence     = require('run-sequence');
 
 
 // Error function - this function prevets browsersync session from crashing on error
-function errorlog(err){
+let errorlog = err => {
 	console.error(err.message);
 	this.emit('end');
 }
@@ -28,10 +29,11 @@ function errorlog(err){
 // -----------------
 
 // Preprocesing pug files to html
-gulp.task('pug', function() {
-  return gulp.src(['app/assets/pug/**/*.pug', '!app/assets/pug/includes/*.pug']) 
-    .pipe(pug()) // Passes it through a gulp-pug, log errors to console
-    .on('error', errorlog)
+gulp.task('pug', () => {
+    return gulp.src(['app/assets/pug/**/*.pug', '!app/assets/pug/includes/*.pug']) 
+    .pipe(pug())
+    .pipe(htmlbeautify()) 
+    .on('error', errorlog) // Passes it through a gulp-pug, log errors to console
     .pipe(gulp.dest('app/')) // Outputs it in the index.html to app folder
     .pipe(browserSync.reload({ // Reloading with Browser Sync
       stream: true
@@ -39,8 +41,8 @@ gulp.task('pug', function() {
 })
 
 // Preprocesing scss files to css
-gulp.task('sass', function() {
-  return gulp.src('app/assets/scss/**/*.scss') // Gets all files ending with .scss in app/scss and children dirs
+gulp.task('sass', () => {
+    return gulp.src('app/assets/scss/**/*.scss') // Gets all files ending with .scss in app/scss and children dirs
     .pipe(sass().on('error', sass.logError)) // Passes it through a gulp-sass, log errors to console
     .pipe(gulp.dest('app/assets/css')) // Outputs it in the css folder
     .pipe(browserSync.reload({ // Reloading with Browser Sync
@@ -49,7 +51,7 @@ gulp.task('sass', function() {
 })
 
 // Start browserSync server
-gulp.task('browserSync', function() {
+gulp.task('browserSync', () => {
   browserSync({
     server: {
       baseDir: 'app'
@@ -59,7 +61,7 @@ gulp.task('browserSync', function() {
 })
 
 // Watchers
-gulp.task('watch', function() {
+gulp.task('watch', () => {
   gulp.watch('app/assets/scss/**/*.scss', ['sass']);
   gulp.watch('app/assets/pug/**/*.pug', ['pug']);
   //gulp.watch('app/index.html', browserSync.reload);
@@ -73,8 +75,8 @@ gulp.task('watch', function() {
 // ------------------
 
 // Optimizing CSS and JavaScript 
-gulp.task('useref', function() {
-  return gulp.src('app/*.html')
+gulp.task('useref', () => {
+   return gulp.src('app/*.html')
     .pipe(sourcemaps.init())
       .pipe(useref())
       .pipe(gulpIf('*.js', babel({
@@ -89,8 +91,8 @@ gulp.task('useref', function() {
 
 
 // Optimizing Images 
-gulp.task('images', function() {
-  return gulp.src('app/assets/img/**/*.+(png|jpg|jpeg|gif|svg)')
+gulp.task('images', () => {
+   return gulp.src('app/assets/img/**/*.+(png|jpg|jpeg|gif|svg)')
     // Caching img that ran through imagemin
     .pipe(cache(imagemin({
       interlaced: true,
@@ -100,21 +102,21 @@ gulp.task('images', function() {
 
 
 // Copying fonts 
-gulp.task('fonts', function() {
-  return gulp.src('app/assets/fonts/**/*')
+gulp.task('fonts', () => {
+   return gulp.src('app/assets/fonts/**/*')
     .pipe(gulp.dest('dist/assets/fonts'))
 })
 
 
 // Cleaning 
-gulp.task('clean', function() {
-  return del.sync('dist').then(function(cb) {
-    return cache.clearAll(cb);
+gulp.task('clean', () => {
+   return del.sync('dist').then((cb) => {
+     cache.clearAll(cb);
   });
 })
 
-gulp.task('clean:dist', function() {
-  return del.sync(['dist/**/*', '!dist/img', '!dist/img/**/*']);
+gulp.task('clean:dist', () => {
+   return del.sync(['dist/**/*', '!dist/img', '!dist/img/**/*']);
 });
 
 
@@ -122,13 +124,13 @@ gulp.task('clean:dist', function() {
 // Build Sequences
 // ---------------
 
-gulp.task('default', function(callback) {
+gulp.task('default', (callback) => {
   runSequence(['pug', 'sass', 'browserSync'], 'watch',
     callback
   )
 })
 
-gulp.task('build', function(callback) {
+gulp.task('build', (callback) => {
   runSequence(
     'clean:dist',
     'pug',
