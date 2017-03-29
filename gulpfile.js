@@ -40,9 +40,9 @@ gulp.task('pug', () => {
     }));
 });
 
-// Preprocesing scss files to css
+// Preprocesing sass files to css
 gulp.task('sass', () => {
-     gulp.src('app/assets/scss/**/*.scss') // Gets all files ending with .scss in app/scss and children dirs
+     gulp.src('app/assets/sass/*.sass') // Gets all files ending with .sass in app/sass and children dirs
     .pipe(sass().on('error', sass.logError)) // Passes it through a gulp-sass, log errors to console
     .pipe(gulp.dest('app/assets/css')) // Outputs it in the css folder
     .pipe(browserSync.reload({ // Reloading with Browser Sync
@@ -62,9 +62,8 @@ gulp.task('browserSync', () => {
 
 // Watchers
 gulp.task('watch', () => {
-  gulp.watch('app/assets/scss/**/*.scss', ['sass']);
+  gulp.watch('app/assets/sass/**/*.sass', ['sass']);
   gulp.watch('app/assets/pug/**/*.pug', ['pug']);
-  //gulp.watch('app/index.html', browserSync.reload);
   gulp.watch('app/assets/js/**/*.js', browserSync.reload);
 });
 
