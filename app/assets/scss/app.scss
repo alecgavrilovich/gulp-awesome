@@ -1,8 +1,22 @@
 // import partials from folders above
 
-@import "0-vendor/vendor-dir";
-@import "1-base/base";
-@import "2-layouts/layouts-dir";
-@import "3-modules/modules-dir";
-@import "4-state/state";
+// Lib
+@import "../lib/css/bourbon/bourbon";
+
+// Base
+@import "base/vars";
+@import "base/base";
+// Layouts
+@import "layouts/layouts";
+
+// Modules
+@import "modules/modules";
+
+// State
+@import "state/state";
+
+
+
+
+
 
