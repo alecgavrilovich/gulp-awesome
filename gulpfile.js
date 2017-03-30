@@ -1,9 +1,3 @@
-let config = {
-	jsConcatFiles: [
-		'./app/assets/js/main.js'
-	]
-}
-
 const gulp = require('gulp');
 const browserSync = require('browser-sync');
 const sass = require('gulp-sass');
@@ -24,6 +18,13 @@ const cache = require('gulp-cache');
 const del = require('del');
 const runSequence = require('run-sequence');
 
+// List of javascript files (in order) to concatenate
+
+let config = {
+	jsConcatFiles: [
+		'./app/assets/js/script.js'
+	]
+}
 
 // Error function - this function prevets browsersync session from crashing on error
 let errorlog = err => {
@@ -54,7 +55,7 @@ gulp.task('sass', () => {
 		.pipe(sass().on('error', sass.logError)) // Passes it through a gulp-sass, log errors to console
 		.pipe(autoprefixer())
 		.pipe(gulp.dest('app/assets/css')) // Outputs it in the css folder
-		.pipe(browserSync.reload({ // Reloading with Browser Sync
+		.pipe(browserSync.reload({
 			stream: true
 		}));
 });
@@ -63,9 +64,14 @@ gulp.task('sass', () => {
 gulp.task('babel', () => {
 	gulp.src(config.jsConcatFiles) 
 		.pipe(concat('temp.js'))
-		.pipe(babel())
-		.pipe(rename('main.js'))		
+		.pipe(babel({
+            presets: ['es2015']
+        }))
+		.pipe(rename('app.js'))		
 		.pipe(gulp.dest('app/assets/js'))
+		.pipe(browserSync.reload({
+			stream: true
+		}));
 });
 
 
@@ -93,7 +99,7 @@ gulp.task('build:serve', function() {
 gulp.task('watch', () => {
 	gulp.watch('app/assets/scss/**/*.scss', ['sass']);
 	gulp.watch('app/assets/pug/**/*.pug', ['pug']);
-	gulp.watch('app/assets/js/**/*.js', browserSync.reload);
+	gulp.watch('app/assets/js/**/*.js', ['babel']);
 });
 
 
@@ -152,7 +158,7 @@ gulp.task('clean:dist', () => {
 // ---------------
 
 gulp.task('default', (callback) => {
-	runSequence(['pug', 'sass', 'browserSync'], 'watch',
+	runSequence(['pug', 'sass','babel', 'browserSync'], 'watch',
 		callback
 	)
 });
@@ -161,6 +167,7 @@ gulp.task('build', (callback) => {
 	runSequence(
 		'clean:dist',
 		'pug',
+		'babel',
 		'sass', ['useref', 'images', 'fonts'], 'build:serve',
 		callback
 	)
