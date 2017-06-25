@@ -10,9 +10,9 @@ const rename = require('gulp-rename');
 const uglify = require('gulp-uglify');
 const gulpIf = require('gulp-if');
 const cssnano = require('gulp-cssnano');
-const pug = require('gulp-pug');
+// const pug = require('gulp-pug');
 const htmlmin = require('gulp-htmlmin');
-const htmlbeautify = require('gulp-html-beautify');
+// const htmlbeautify = require('gulp-html-beautify');
 const imagemin = require('gulp-imagemin');
 const cache = require('gulp-cache');
 const del = require('del');
@@ -37,17 +37,24 @@ let errorlog = err => {
 // Development Tasks 
 // -----------------
 
-// Preprocesing pug files to html
-gulp.task('pug', () => {
-	gulp.src(['app/assets/pug/**/*.pug', '!app/assets/pug/includes/*.pug'])
-		.pipe(pug())
-		.pipe(htmlbeautify())
-		.on('error', errorlog) // Passes it through a gulp-pug, log errors to console
-		.pipe(gulp.dest('app/')) // Outputs it in the index.html to app folder
+gulp.task('html', () => {
+	gulp.src('app/*.html')
 		.pipe(browserSync.reload({ // Reloading with Browser Sync
 			stream: true
 		}));
 });
+
+// Preprocesing pug files to html
+// gulp.task('pug', () => {
+// 	gulp.src(['app/assets/pug/**/*.pug', '!app/assets/pug/includes/*.pug'])
+// 		.pipe(pug())
+// 		.pipe(htmlbeautify())
+// 		.on('error', errorlog) // Passes it through a gulp-pug, log errors to console
+// 		.pipe(gulp.dest('app/')) // Outputs it in the index.html to app folder
+// 		.pipe(browserSync.reload({ // Reloading with Browser Sync
+// 			stream: true
+// 		}));
+// });
 
 // Preprocesing scss files to css
 gulp.task('sass', () => {
@@ -98,7 +105,7 @@ gulp.task('build:serve', function() {
 // Watchers
 gulp.task('watch', () => {
 	gulp.watch('app/assets/scss/**/*.scss', ['sass']);
-	gulp.watch('app/assets/pug/**/*.pug', ['pug']);
+	gulp.watch('app/*.html', ['html']);
 	gulp.watch('app/assets/js/**/*.js', ['babel']);
 });
 
@@ -158,7 +165,7 @@ gulp.task('clean:dist', () => {
 // ---------------
 
 gulp.task('default', (callback) => {
-	runSequence(['pug', 'sass','babel', 'browserSync'], 'watch',
+	runSequence(['sass','babel', 'browserSync'], 'watch',
 		callback
 	)
 });
@@ -166,7 +173,6 @@ gulp.task('default', (callback) => {
 gulp.task('build', (callback) => {
 	runSequence(
 		'clean:dist',
-		'pug',
 		'babel',
 		'sass', ['useref', 'images', 'fonts'], 'build:serve',
 		callback
