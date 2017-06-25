@@ -44,18 +44,6 @@ gulp.task('html', () => {
 		}));
 });
 
-// Preprocesing pug files to html
-// gulp.task('pug', () => {
-// 	gulp.src(['app/assets/pug/**/*.pug', '!app/assets/pug/includes/*.pug'])
-// 		.pipe(pug())
-// 		.pipe(htmlbeautify())
-// 		.on('error', errorlog) // Passes it through a gulp-pug, log errors to console
-// 		.pipe(gulp.dest('app/')) // Outputs it in the index.html to app folder
-// 		.pipe(browserSync.reload({ // Reloading with Browser Sync
-// 			stream: true
-// 		}));
-// });
-
 // Preprocesing scss files to css
 gulp.task('sass', () => {
 	gulp.src('app/assets/scss/*.scss') // Gets all files ending with .scss in app/scss and children dirs
